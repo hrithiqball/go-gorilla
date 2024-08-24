@@ -1,5 +1,5 @@
 [build]
-cmd = "go build -o main ."
-bin = "main"
+cmd = "go build -o local_my_api cmd/main.go"
+bin = "local_my_api"
 include_ext = ["go"]
 exclude_dir = ["assets", "vendor", "tmp"]

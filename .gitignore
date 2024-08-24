@@ -15,7 +15,8 @@
 *.out
 
 # Dependency directories (remove the comment below to include it)
-# vendor/
+vendor/
+tmp/
 
 # Go workspace file
 go.work
@@ -23,3 +24,5 @@ go.work.sum
 
 # env file
 .env
+
+local_my_api
