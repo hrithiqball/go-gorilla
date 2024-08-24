@@ -6,10 +6,10 @@ import (
 
 type User struct {
 	gorm.Model
-	ID           string `gorm:"primaryKey"`
-	Name         string
-	Email        string `gorm:"unique"`
-	PasswordHash string
+	ID           string `gorm:"primaryKey" json:"id"`
+	Name         string `gorm:"not null" json:"name"`
+	Email        string `gorm:"unique" json:"email"`
+	PasswordHash string `gorm:"not null" json:"-"`
 }
 
 type UserUpdate struct {

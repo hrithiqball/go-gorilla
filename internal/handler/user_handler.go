@@ -82,13 +82,6 @@ func (h *userHandler) GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userResponse := toUserResponse(user)
-	// in case its not working
-	// response, err := json.Marshal(userResponse)
-	// if err != nil {
-	// 	utils.ResponseWithError(w, http.StatusInternalServerError, "Error marshaling response")
-	// 	return
-	// }
-
 	utils.RespondWithJson(w, http.StatusOK, userResponse)
 }
 

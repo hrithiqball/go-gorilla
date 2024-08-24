@@ -23,39 +23,19 @@ func NewBusinessService(repo repositories.BusinessRepository) BusinessService {
 }
 
 func (s *businessService) CreateBusinessService(b *models.Business) (*models.Business, error) {
-	business, err := s.businessRepository.CreateBusiness(b)
-	if err != nil {
-		return nil, err
-	}
-
-	return business, nil
+	return s.businessRepository.CreateBusiness(b)
 }
 
 func (s *businessService) GetBusinessListService(pagination utils.Pagination) ([]models.Business, int64, error) {
-	businessList, count, err := s.businessRepository.GetBusinessList(pagination)
-	if err != nil {
-		return nil, 0, err
-	}
-
-	return businessList, count, nil
+	return s.businessRepository.GetBusinessList(pagination)
 }
 
 func (s *businessService) GetBusinessService(id string) (*models.Business, error) {
-	business, err := s.businessRepository.GetBusinessByID(id)
-	if err != nil {
-		return nil, err
-	}
-
-	return business, nil
+	return s.businessRepository.GetBusinessByID(id)
 }
 
 func (s *businessService) UpdateBusinessService(id string, b *models.BusinessUpdate) (*models.Business, error) {
-	business, err := s.businessRepository.UpdateBusiness(id, b)
-	if err != nil {
-		return nil, err
-	}
-
-	return business, nil
+	return s.businessRepository.UpdateBusiness(id, b)
 }
 
 func (s *businessService) DeleteBusinessService(id string) error {

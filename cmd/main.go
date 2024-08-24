@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"local_my_api/internal/db"
 	"local_my_api/internal/handler"
 	"local_my_api/internal/middlewares"
@@ -10,29 +12,15 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
+	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
 )
 
 func main() {
 	db.Connect()
 	defer db.Close()
-
-	if err := godotenv.Load(); err != nil {
-		log.Fatalf("Error loading .env file")
-	}
-
-	PORT := os.Getenv("PORT")
-	// RUN_MIGRATION := os.Getenv("RUN_MIGRATION")
-
-	// if RUN_MIGRATION == "true" {
-	// 	err := db.DB.AutoMigrate(&models.User{})
-	// 	if err != nil {
-	// 		log.Fatalf("Error applying migrations: %v", err)
-	// 	}
-	// 	fmt.Println("Migrations applied successfully!")
-	// }
 
 	db.Migrations()
 
@@ -55,5 +43,36 @@ func main() {
 
 	routes.SetupRoutes(router, authHandler, userHandler, businessHandler, productHandler)
 
-	log.Fatal(http.ListenAndServe(":"+PORT, router))
+	PORT := os.Getenv("PORT")
+	if PORT == "" {
+		PORT = "8080"
+	}
+
+	server := &http.Server{
+		Addr:    ":" + PORT,
+		Handler: router,
+	}
+
+	go func() {
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("Could not listen on %s: %v\n", PORT, err)
+		}
+	}()
+
+	fmt.Printf("🚀 Server is listening on port %s! 🚀 \n", PORT)
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt)
+	<-quit
+
+	fmt.Println("Shutting down server...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := server.Shutdown(ctx); err != nil {
+		log.Fatalf("Server forced to shutdown: %v", err)
+	}
+
+	fmt.Println("🪽 Server exited gracefully")
 }

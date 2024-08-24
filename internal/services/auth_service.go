@@ -16,11 +16,11 @@ type AuthService interface {
 }
 
 type authService struct {
-	userService repositories.UserRepository
+	userRepository repositories.UserRepository
 }
 
-func NewAuthService(service repositories.UserRepository) AuthService {
-	return &authService{userService: service}
+func NewAuthService(repo repositories.UserRepository) AuthService {
+	return &authService{userRepository: repo}
 }
 
 func (s *authService) RegisterService(email, password, name string) error {
@@ -29,14 +29,15 @@ func (s *authService) RegisterService(email, password, name string) error {
 		return fmt.Errorf("failed to hash password: %w", err)
 	}
 
-	return s.userService.CreateUser(&models.User{
+	return s.userRepository.CreateUser(&models.User{
+		Name:         name,
 		Email:        email,
 		PasswordHash: string(hash),
 	})
 }
 
 func (s *authService) LoginService(email, password string) (string, error) {
-	user, err := s.userService.GetUserByEmail(email)
+	user, err := s.userRepository.GetUserByEmail(email)
 	if err != nil {
 		return "", fmt.Errorf("user not found: %w", err)
 	}

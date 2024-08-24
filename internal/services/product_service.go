@@ -23,39 +23,19 @@ func NewProductService(repo repositories.ProductRepository) ProductService {
 }
 
 func (s *productService) CreateProductService(p *models.Product) (*models.Product, error) {
-	product, err := s.productRepository.CreateProduct(p)
-	if err != nil {
-		return nil, err
-	}
-
-	return product, nil
+	return s.productRepository.CreateProduct(p)
 }
 
 func (s *productService) GetProductListService(pagination utils.Pagination) ([]models.Product, int64, error) {
-	productList, count, err := s.productRepository.GetProductList(pagination)
-	if err != nil {
-		return nil, count, err
-	}
-
-	return productList, count, nil
+	return s.productRepository.GetProductList(pagination)
 }
 
 func (s *productService) GetProductService(id string) (*models.Product, error) {
-	product, err := s.productRepository.GetProductByID(id)
-	if err != nil {
-		return nil, err
-	}
-
-	return product, nil
+	return s.productRepository.GetProductByID(id)
 }
 
 func (s *productService) UpdateProductService(id string, p *models.ProductUpdate) (*models.Product, error) {
-	product, err := s.productRepository.UpdateProduct(id, p)
-	if err != nil {
-		return nil, err
-	}
-
-	return product, nil
+	return s.productRepository.UpdateProduct(id, p)
 }
 
 func (s *productService) DeleteProductService(id string) error {

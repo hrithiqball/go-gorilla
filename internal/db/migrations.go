@@ -33,5 +33,5 @@ func Migrations() {
 		log.Fatalf("Could not apply migrations: %v", err)
 	}
 
-	fmt.Println("Migrations applied successfully!")
+	fmt.Println("🧩 Migrations applied successfully! ")
 }
