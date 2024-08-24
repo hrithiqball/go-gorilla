@@ -19,6 +19,9 @@ go mod init local_my_api
 # to install new package
 go get -u github.com/gorilla/mux
 
+# to list all the dependency
+go mod vendor
+
 # to install dependency
 go mod tidy
 
