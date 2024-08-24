@@ -3,6 +3,7 @@ module local_my_api
 go 1.23.0
 
 require (
+	github.com/go-gormigrate/gormigrate/v2 v2.1.2
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/gorilla/mux v1.8.1
 	github.com/joho/godotenv v1.5.1
