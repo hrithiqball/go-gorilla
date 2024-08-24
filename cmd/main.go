@@ -15,6 +15,7 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
 
@@ -43,6 +44,14 @@ func main() {
 
 	routes.SetupRoutes(router, authHandler, userHandler, businessHandler, productHandler)
 
+	corsOptions := handlers.CORS(
+		handlers.AllowedOrigins([]string{"*"}),
+		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}),
+		handlers.AllowedHeaders([]string{"Content-Type", "Authorization"}),
+	)
+
+	corsRouter := corsOptions(router)
+
 	PORT := os.Getenv("PORT")
 	if PORT == "" {
 		PORT = "8080"
@@ -50,7 +59,7 @@ func main() {
 
 	server := &http.Server{
 		Addr:    ":" + PORT,
-		Handler: router,
+		Handler: corsRouter,
 	}
 
 	go func() {
