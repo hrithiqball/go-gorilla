@@ -26,12 +26,14 @@ var migrationList = []*gormigrate.Migration{
 	},
 }
 
-func Migrations() {
+func Migrations() error {
 	gormigrate := gormigrate.New(DB, gormigrate.DefaultOptions, migrationList)
 
 	if err := gormigrate.Migrate(); err != nil {
-		log.Fatalf("Could not apply migrations: %v", err)
+		log.Printf("An error occurred while migrating: %v", err)
+		return fmt.Errorf("an error occurred while migrating: %v", err)
 	}
 
 	fmt.Println("🧩 Migrations applied successfully! ")
+	return nil
 }

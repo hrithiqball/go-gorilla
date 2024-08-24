@@ -14,6 +14,11 @@ import (
 
 var DB *gorm.DB
 
+const (
+	maxRetries    = 5
+	retryInterval = 2 * time.Second
+)
+
 func init() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatalf("Error loading .env file")
@@ -24,9 +29,18 @@ func Connect() error {
 	dsn := os.Getenv("DATABASE_URL")
 
 	var err error
-	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
-	})
+	for i := 0; i < maxRetries; i++ {
+		DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
+			Logger: logger.Default.LogMode(logger.Info),
+		})
+		if err == nil {
+			break
+		}
+
+		fmt.Printf("Failed to connect to database (attempt %d/%d): %v\n", i+1, maxRetries, err)
+		time.Sleep(retryInterval)
+	}
+
 	if err != nil {
 		return fmt.Errorf("unable to connect to database: %v", err)
 	}
@@ -45,4 +59,10 @@ func Connect() error {
 }
 
 func Close() {
+	sqlDB, err := DB.DB()
+	if err != nil {
+		log.Printf("Error getting SQL DB object: %v", err)
+		return
+	}
+	sqlDB.Close()
 }

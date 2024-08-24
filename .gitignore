@@ -24,5 +24,9 @@ go.work.sum
 
 # env file
 .env
+.env.local
+.env.development
+.env.test
+.env.production
 
 local_my_api

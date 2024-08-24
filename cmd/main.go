@@ -20,10 +20,14 @@ import (
 )
 
 func main() {
-	db.Connect()
+	if err := db.Connect(); err != nil {
+		log.Fatalf("Could not connect to database: %v", err)
+	}
 	defer db.Close()
 
-	db.Migrations()
+	if err := db.Migrations(); err != nil {
+		log.Fatalf("Could not run migrations: %v", err)
+	}
 
 	userRepo := repositories.NewUserRepository(db.DB)
 	businessRepo := repositories.NewBusinessRepository(db.DB)
@@ -41,7 +45,6 @@ func main() {
 
 	router := mux.NewRouter()
 	router.Use(middlewares.LoggingMiddleware)
-
 	routes.SetupRoutes(router, authHandler, userHandler, businessHandler, productHandler)
 
 	corsOptions := handlers.CORS(
@@ -49,7 +52,6 @@ func main() {
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}),
 		handlers.AllowedHeaders([]string{"Content-Type", "Authorization"}),
 	)
-
 	corsRouter := corsOptions(router)
 
 	PORT := os.Getenv("PORT")
