@@ -19,7 +19,12 @@ import (
 	"github.com/gorilla/mux"
 )
 
+var version = "unknown"
+
 func main() {
+	loadVersion()
+	fmt.Printf("App Version: %s\n", version)
+
 	if err := db.Connect(); err != nil {
 		log.Fatalf("Could not connect to database: %v", err)
 	}
@@ -86,4 +91,13 @@ func main() {
 	}
 
 	fmt.Println("🪽 Server exited gracefully")
+}
+
+func loadVersion() {
+	data, err := os.ReadFile("version.txt")
+	if err != nil {
+		version = "development"
+	}
+
+	version = string(data)
 }

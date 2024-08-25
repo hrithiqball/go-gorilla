@@ -86,3 +86,9 @@ File name copied to clipboard using xclip.
 
 4. Paste the ID in migrationList array in file `internal/db/migrations.go`
 5. Edit the migration file created
+
+## Deployment
+
+```bash
+docker build -t go-app:1.0.0 .
+```

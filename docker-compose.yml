@@ -1,13 +1,8 @@
 services:
   app:
-    image: my-go-app
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: go-local-my:0.0.1
     ports:
       - '8080:8080'
-    environment:
-      - PORT=8080
     depends_on:
       - db
     networks:
@@ -25,6 +20,17 @@ services:
       - my-network
     volumes:
       - pg_data:/var/lib/postgresql/data
+
+  web:
+    image: ghcr.io/hrithiqball/vite-local-my:0.0.1
+    environment:
+      - NODE_ENV=production
+    ports:
+      - '5173:5173'
+    networks:
+      - my-network
+    depends_on:
+      - app
 
 networks:
   my-network:
