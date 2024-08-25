@@ -13,7 +13,7 @@ if [ ! -f .env.local ]; then
 fi
 
 
-IMAGE_NAME="go-local-my"
+IMAGE_NAME="local/go-local-my"
 
 docker build -t "$IMAGE_NAME:$VERSION" -f Dockerfile .
 
