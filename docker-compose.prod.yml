@@ -1,0 +1,43 @@
+services:
+  app:
+    image: ghcr.io/hrithiqball/go-local-my:0.0.2
+    container_name: go-app
+    ports:
+      - '8080:8080'
+    depends_on:
+      - db
+    networks:
+      - my-network
+
+  db:
+    image: postgres:16
+    container_name: postgres
+    environment:
+      POSTGRES_DB: local_my
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '5432:5432'
+    networks:
+      - my-network
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  web:
+    image: ghcr.io/hrithiqball/vite-local-my:0.0.2
+    container_name: vite-app
+    environment:
+      - NODE_ENV=production
+    ports:
+      - '5173:5173'
+    networks:
+      - my-network
+    depends_on:
+      - app
+
+networks:
+  my-network:
+    driver: bridge
+
+volumes:
+  pg_data:

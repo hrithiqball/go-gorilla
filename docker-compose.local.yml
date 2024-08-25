@@ -1,7 +1,6 @@
 services:
   app:
-    image: ghcr.io/hrithiqball/go-local-my:0.0.2
-    # image: local/go-local-my:0.0.2
+    image: local/go-local-my:0.0.2
     container_name: go-app
     ports:
       - '8080:8080'
@@ -25,8 +24,7 @@ services:
       - pg_data:/var/lib/postgresql/data
 
   web:
-    image: ghcr.io/hrithiqball/vite-local-my:0.0.2
-    # image: local/vite-local-my:0.0.2
+    image: local/vite-local-my:0.0.2
     container_name: vite-app
     environment:
       - NODE_ENV=production
