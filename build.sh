@@ -1,17 +1,17 @@
 #!/bin/bash
 
-if [ ! -f version.txt ]; then
-  echo "Error: version.txt file not found!"
-  exit 1
-fi
-
 VERSION=$(cat version.txt | tr -d '[:space:]')
 
-# Check if version is empty
 if [ -z "$VERSION" ]; then
   echo "Error: version.txt is empty!"
   exit 1
 fi
+
+if [ ! -f .env.local ]; then
+  echo "Error: .env.local file not found!"
+  exit 1
+fi
+
 
 IMAGE_NAME="go-local-my"
 

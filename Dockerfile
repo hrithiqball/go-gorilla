@@ -14,7 +14,23 @@ FROM debian:bookworm-slim
 WORKDIR /app
 
 COPY --from=builder /app/main /app/main
-COPY .env.production .env
+
+# GH Actions ENV
+# Start
+ARG BUILD_ENV
+ARG DATABASE_URL
+ARG SECRET_KEY
+ARG PORT
+
+RUN echo "DATABASE_URL=${DATABASE_URL}" > .env && \
+    echo "SECRET_KEY=${SECRET_KEY}" >> .env && \
+    echo "PORT=${PORT}" >> .env
+# End
+
+# LOCAL
+# Start
+# COPY .env.local .env
+# End
 
 EXPOSE 8080
 
