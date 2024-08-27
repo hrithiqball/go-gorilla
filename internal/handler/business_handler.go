@@ -1,10 +1,12 @@
 package handler
 
 import (
-	"encoding/json"
+	"crypto/sha256"
+	"encoding/hex"
 	"io"
 	"local_my_api/internal/models"
 	"local_my_api/internal/services"
+	"local_my_api/internal/validation"
 	"local_my_api/pkg/utils"
 	"mime/multipart"
 	"net/http"
@@ -58,6 +60,11 @@ func (h *businessHandler) CreateBusinessHandler(w http.ResponseWriter, r *http.R
 		return
 	}
 
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "Failed to parse form data", http.StatusBadRequest)
+		return
+	}
+
 	name := r.FormValue("name")
 	email := r.FormValue("email")
 	phone := r.FormValue("phone")
@@ -93,6 +100,11 @@ func (h *businessHandler) CreateBusinessHandler(w http.ResponseWriter, r *http.R
 		}
 	}
 
+	if err := validation.ValidateCreateBusinessFormInput(name, email, phone, address, website); err != nil {
+		utils.ResponseWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
 	business, err := h.businessService.CreateBusinessService(&models.Business{
 		Name:            name,
 		Email:           email,
@@ -104,35 +116,39 @@ func (h *businessHandler) CreateBusinessHandler(w http.ResponseWriter, r *http.R
 		BusinessOwnerID: businessOwnerID,
 	})
 	if err != nil || business == nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		utils.ResponseWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(business)
+	utils.RespondWithJson(w, http.StatusCreated, business)
 }
 
 func (h *businessHandler) GetBusinessListHandler(w http.ResponseWriter, r *http.Request) {
-	var businesseList = []models.Business{}
+	var businessList = []models.Business{}
 
 	pageStr := r.URL.Query().Get("page")
 	sizeStr := r.URL.Query().Get("size")
 
 	pagination := utils.ParsePagination(pageStr, sizeStr)
 
-	businesseList, businessListCount, err := h.businessService.GetBusinessListService(pagination)
+	businessList, businessListCount, err := h.businessService.GetBusinessListService(pagination)
 	if err != nil {
 		utils.ResponseWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
+	businessListResponse := []BusinessResponse{}
+	for _, business := range businessList {
+		businessListResponse = append(businessListResponse, *toBusinessResponse(&business))
+	}
+
 	response := struct {
-		Businesses []models.Business `json:"businessList"`
-		Total      int64             `json:"total"`
-		Page       int               `json:"page"`
-		PageSize   int               `json:"pageSize"`
+		Businesses []BusinessResponse `json:"businessList"`
+		Total      int64              `json:"total"`
+		Page       int                `json:"page"`
+		PageSize   int                `json:"pageSize"`
 	}{
-		Businesses: businesseList,
+		Businesses: businessListResponse,
 		Total:      businessListCount,
 		Page:       pagination.Page,
 		PageSize:   pagination.Size,
@@ -225,8 +241,13 @@ func (h *businessHandler) DeleteBusinessHandler(w http.ResponseWriter, r *http.R
 func saveFile(file multipart.File, fileHeader *multipart.FileHeader) (string, error) {
 	defer file.Close()
 
-	fileName := fileHeader.Filename
-	filePath := filepath.Join(uploadDir, fileName)
+	ext := filepath.Ext(fileHeader.Filename)
+	hash := sha256.New()
+	if _, err := io.Copy(hash, file); err != nil {
+		return "", err
+	}
+	hashedFileName := hex.EncodeToString(hash.Sum(nil)) + ext
+	filePath := filepath.Join(uploadDir, hashedFileName)
 
 	destFile, err := os.Create(filePath)
 	if err != nil {
@@ -234,16 +255,20 @@ func saveFile(file multipart.File, fileHeader *multipart.FileHeader) (string, er
 	}
 	defer destFile.Close()
 
+	if _, err := file.Seek(0, io.SeekStart); err != nil {
+		return "", err
+	}
+
 	_, err = io.Copy(destFile, file)
 	if err != nil {
 		return "", err
 	}
 
-	return fileName, nil
+	return "/bucket/" + hashedFileName, nil
 }
 
-func toBusinessResponse(business *models.Business) BusinessResponse {
-	return BusinessResponse{
+func toBusinessResponse(business *models.Business) *BusinessResponse {
+	return &BusinessResponse{
 		ID:   business.ID,
 		Name: business.Name,
 	}

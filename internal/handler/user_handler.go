@@ -15,6 +15,7 @@ import (
 type UserHandler interface {
 	GetUserListHandler(w http.ResponseWriter, r *http.Request)
 	GetUserHandler(w http.ResponseWriter, r *http.Request)
+	GetUserBusinessHandler(w http.ResponseWriter, r *http.Request)
 	UpdateUserHandler(w http.ResponseWriter, r *http.Request)
 	DeleteUserHandler(w http.ResponseWriter, r *http.Request)
 }
@@ -83,6 +84,19 @@ func (h *userHandler) GetUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	userResponse := toUserResponse(user)
 	utils.RespondWithJson(w, http.StatusOK, userResponse)
+}
+
+func (h *userHandler) GetUserBusinessHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	ID := vars["id"]
+
+	businessList, err := h.userService.GetUserBusinessService(ID)
+	if err != nil {
+		utils.ResponseWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	utils.RespondWithJson(w, http.StatusOK, businessList)
 }
 
 func (h *userHandler) UpdateUserHandler(w http.ResponseWriter, r *http.Request) {

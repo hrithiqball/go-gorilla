@@ -11,7 +11,7 @@ type Business struct {
 	CoverPhoto      string `json:"coverPhoto"`
 	ProfilePhoto    string `json:"profilePhoto"`
 	Email           string `gorm:"unique" json:"email"`
-	Phone           string `gorm:"unique" json:"phone"`
+	Phone           string `json:"phone"`
 	Address         string `json:"address"`
 	Website         string `json:"website"`
 	BusinessOwnerID string `json:"businessOwnerID"`
