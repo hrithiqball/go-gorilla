@@ -6,6 +6,7 @@ import (
 	"local_my_api/internal/services"
 	"local_my_api/internal/validation"
 	"local_my_api/pkg/utils"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -92,6 +93,7 @@ func (h *userHandler) GetUserBusinessHandler(w http.ResponseWriter, r *http.Requ
 
 	businessList, err := h.userService.GetUserBusinessService(ID)
 	if err != nil {
+		log.Printf("Error retrieving user business: %v", err)
 		utils.ResponseWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}

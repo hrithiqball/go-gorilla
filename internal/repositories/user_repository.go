@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"local_my_api/internal/models"
 	"local_my_api/pkg/utils"
+	"log"
 
 	"gorm.io/gorm"
 )
@@ -67,7 +68,11 @@ func (r *userRepository) GetUserList(pagination utils.Pagination) ([]models.User
 
 func (r *userRepository) GetUserBusiness(id string) ([]models.Business, error) {
 	var businessList []models.Business
-	if err := r.db.Where("user_id = ?", id).Find(&businessList).Error; err != nil {
+	query := r.db.Model(&models.Business{}).Where("business_owner_id = ?", id).Find(&businessList)
+
+	err := query.Error
+	if err != nil {
+		log.Printf("Error retrieving user business: %v", err)
 		return nil, fmt.Errorf("failed to retrieve business list: %w", err)
 	}
 

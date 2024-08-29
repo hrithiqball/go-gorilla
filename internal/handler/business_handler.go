@@ -31,10 +31,12 @@ type businessHandler struct {
 	businessService services.BusinessService
 }
 
-// TODO: Add BusinessResponse struct
 type BusinessResponse struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID      string `json:"id"`
+	Name    string `json:"name"`
+	Phone   string `json:"phone"`
+	Email   string `json:"email"`
+	Website string `json:"website"`
 }
 
 func NewBusinessHandler(service services.BusinessService) BusinessHandler {
@@ -115,12 +117,14 @@ func (h *businessHandler) CreateBusinessHandler(w http.ResponseWriter, r *http.R
 		ProfilePhoto:    profilePhotoPath,
 		BusinessOwnerID: businessOwnerID,
 	})
+
 	if err != nil || business == nil {
 		utils.ResponseWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	utils.RespondWithJson(w, http.StatusCreated, business)
+	businessResponse := toBusinessResponse(business)
+	utils.RespondWithJson(w, http.StatusCreated, businessResponse)
 }
 
 func (h *businessHandler) GetBusinessListHandler(w http.ResponseWriter, r *http.Request) {
@@ -269,7 +273,10 @@ func saveFile(file multipart.File, fileHeader *multipart.FileHeader) (string, er
 
 func toBusinessResponse(business *models.Business) *BusinessResponse {
 	return &BusinessResponse{
-		ID:   business.ID,
-		Name: business.Name,
+		ID:      business.ID,
+		Name:    business.Name,
+		Phone:   business.Phone,
+		Email:   business.Email,
+		Website: business.Website,
 	}
 }
