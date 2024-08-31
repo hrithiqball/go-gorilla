@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"local_my_api/internal/models"
 	"local_my_api/pkg/utils"
+	"log"
 
 	"gorm.io/gorm"
 )
@@ -13,6 +14,7 @@ type UserRepository interface {
 	GetByUserByID(id string) (*models.User, error)
 	GetUserByEmail(email string) (*models.User, error)
 	GetUserList(pagination utils.Pagination) ([]models.User, int64, error)
+	GetUserBusiness(id string) ([]models.Business, error)
 	UpdateUser(id string, user *models.UserUpdate) (*models.User, error)
 	DeleteUser(id string) error
 }
@@ -62,6 +64,19 @@ func (r *userRepository) GetUserList(pagination utils.Pagination) ([]models.User
 	}
 
 	return userList, totalUsers, nil
+}
+
+func (r *userRepository) GetUserBusiness(id string) ([]models.Business, error) {
+	var businessList []models.Business
+	query := r.db.Model(&models.Business{}).Where("business_owner_id = ?", id).Find(&businessList)
+
+	err := query.Error
+	if err != nil {
+		log.Printf("Error retrieving user business: %v", err)
+		return nil, fmt.Errorf("failed to retrieve business list: %w", err)
+	}
+
+	return businessList, nil
 }
 
 func (r *userRepository) UpdateUser(id string, u *models.UserUpdate) (*models.User, error) {

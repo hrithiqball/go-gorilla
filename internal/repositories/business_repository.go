@@ -39,7 +39,7 @@ func (r *businessRepository) CreateBusiness(b *models.Business) (*models.Busines
 		BusinessOwnerID: b.BusinessOwnerID,
 	}
 
-	return &business, r.db.Create(business).Error
+	return &business, r.db.Create(&business).Error
 }
 
 func (r *businessRepository) GetBusinessList(pagination utils.Pagination) ([]models.Business, int64, error) {

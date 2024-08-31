@@ -10,6 +10,7 @@ type UserService interface {
 	GetUserListService(pagination utils.Pagination) ([]models.User, int64, error)
 	GetUserService(id string) (*models.User, error)
 	GetUserByEmailService(email string) (*models.User, error)
+	GetUserBusinessService(id string) ([]models.Business, error)
 	UpdateUserService(id string, user *models.UserUpdate) (*models.User, error)
 	DeleteUserService(id string) error
 }
@@ -28,6 +29,10 @@ func (s *userService) GetUserListService(pagination utils.Pagination) ([]models.
 
 func (s *userService) GetUserService(id string) (*models.User, error) {
 	return s.userRepository.GetByUserByID(id)
+}
+
+func (s *userService) GetUserBusinessService(id string) ([]models.Business, error) {
+	return s.userRepository.GetUserBusiness(id)
 }
 
 func (s *userService) GetUserByEmailService(email string) (*models.User, error) {

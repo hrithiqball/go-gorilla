@@ -11,6 +11,7 @@ func SetupUserRoutes(r *mux.Router, h handler.UserHandler) {
 	public := r.PathPrefix("/user").Subrouter()
 	public.HandleFunc("/list", h.GetUserListHandler).Methods("GET")
 	public.HandleFunc("/{id}", h.GetUserHandler).Methods("GET")
+	public.HandleFunc("/business/{id}", h.GetUserBusinessHandler).Methods("GET")
 
 	protected := r.PathPrefix("/user").Subrouter()
 	protected.HandleFunc("/{id}", h.UpdateUserHandler).Methods("PATCH")

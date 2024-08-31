@@ -9,7 +9,7 @@ import (
 
 func SetupBusinessRoutes(r *mux.Router, h handler.BusinessHandler) {
 	public := r.PathPrefix("/business").Subrouter()
-	public.HandleFunc("list", h.GetBusinessListHandler).Methods("GET")
+	public.HandleFunc("/list", h.GetBusinessListHandler).Methods("GET")
 	public.HandleFunc("/{id}", h.GetBusinessHandler).Methods("GET")
 
 	protected := r.PathPrefix("/business").Subrouter()
