@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/gorilla/mux"
 	"gorm.io/gorm"
@@ -32,11 +33,17 @@ type businessHandler struct {
 }
 
 type BusinessResponse struct {
-	ID      string `json:"id"`
-	Name    string `json:"name"`
-	Phone   string `json:"phone"`
-	Email   string `json:"email"`
-	Website string `json:"website"`
+	ID              string    `json:"id"`
+	Name            string    `json:"name"`
+	Phone           string    `json:"phone"`
+	Email           string    `json:"email"`
+	Website         string    `json:"website"`
+	CoverPhoto      string    `json:"coverPhoto"`
+	ProfilePhoto    string    `json:"profilePhoto"`
+	CreatedAt       time.Time `json:"createdAt"`
+	UpdatedAt       time.Time `json:"updatedAt"`
+	Address         string    `json:"address"`
+	BusinessOwnerID string    `json:"businessOwnerId"`
 }
 
 func NewBusinessHandler(service services.BusinessService) BusinessHandler {
@@ -273,10 +280,16 @@ func saveFile(file multipart.File, fileHeader *multipart.FileHeader) (string, er
 
 func toBusinessResponse(business *models.Business) *BusinessResponse {
 	return &BusinessResponse{
-		ID:      business.ID,
-		Name:    business.Name,
-		Phone:   business.Phone,
-		Email:   business.Email,
-		Website: business.Website,
+		ID:              business.ID,
+		Name:            business.Name,
+		Phone:           business.Phone,
+		Email:           business.Email,
+		Website:         business.Website,
+		CoverPhoto:      business.CoverPhoto,
+		ProfilePhoto:    business.ProfilePhoto,
+		CreatedAt:       business.CreatedAt,
+		UpdatedAt:       business.UpdatedAt,
+		Address:         business.Address,
+		BusinessOwnerID: business.BusinessOwnerID,
 	}
 }
