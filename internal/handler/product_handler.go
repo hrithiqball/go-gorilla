@@ -4,6 +4,7 @@ import (
 	"local_my_api/internal/models"
 	"local_my_api/internal/services"
 	"local_my_api/pkg/utils"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -23,13 +24,6 @@ type productHandler struct {
 	businessService services.BusinessService
 }
 
-type ProductResponse struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Price int    `json:"price"`
-	Stock int    `json:"stock"`
-}
-
 func NewProductHandler(productService services.ProductService, businessService services.BusinessService) ProductHandler {
 	return &productHandler{productService: productService,
 		businessService: businessService}
@@ -44,7 +38,7 @@ func (h *productHandler) CreateProductHandler(w http.ResponseWriter, r *http.Req
 
 	// validate form abd construct product
 
-	price := utils.ParseInt(priceStr)
+	price := utils.ParseUint(priceStr)
 	stock := utils.ParseInt(stockStr)
 
 	userID, ok := r.Context().Value("userID").(string)
@@ -87,8 +81,10 @@ func (h *productHandler) CreateProductHandler(w http.ResponseWriter, r *http.Req
 func (h *productHandler) GetProductListHandler(w http.ResponseWriter, r *http.Request) {
 	var productList = []models.Product{}
 
-	pageStr := r.FormValue("page")
-	sizeStr := r.FormValue("size")
+	pageStr := r.URL.Query().Get("page")
+	sizeStr := r.URL.Query().Get("size")
+	offsetStr := r.URL.Query().Get("offset")
+	log.Printf("page: %s, size: %s, offset: %s", pageStr, sizeStr, offsetStr)
 
 	pagination := utils.ParsePagination(pageStr, sizeStr)
 
@@ -98,16 +94,16 @@ func (h *productHandler) GetProductListHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	productResponse := []ProductResponse{}
+	productResponse := []models.ProductResponse{}
 	for _, product := range productList {
 		productResponse = append(productResponse, toProductResponse(&product))
 	}
 
 	response := struct {
-		Products []ProductResponse `json:"productList"`
-		Total    int64             `json:"total"`
-		Page     int               `json:"page"`
-		PageSize int               `json:"pageSize"`
+		Products []models.ProductResponse `json:"productList"`
+		Total    int64                    `json:"total"`
+		Page     int                      `json:"page"`
+		PageSize int                      `json:"pageSize"`
 	}{
 		Products: productResponse,
 		Total:    count,
@@ -209,8 +205,8 @@ func (h *productHandler) DeleteProductHandler(w http.ResponseWriter, r *http.Req
 	utils.RespondWithJson(w, http.StatusOK, utils.Response{Message: "Product deleted", Status: "success"})
 }
 
-func toProductResponse(product *models.Product) ProductResponse {
-	return ProductResponse{
+func toProductResponse(product *models.Product) models.ProductResponse {
+	return models.ProductResponse{
 		ID:    product.ID,
 		Name:  product.Name,
 		Price: product.Price,
