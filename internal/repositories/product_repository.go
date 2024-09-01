@@ -28,12 +28,15 @@ func (r *productRepository) CreateProduct(p *models.Product) (*models.Product, e
 	id := utils.GenerateNanoID()
 
 	product := models.Product{
-		ID:          id,
-		Name:        p.Name,
-		Description: p.Description,
-		Price:       p.Price,
-		Stock:       p.Stock,
-		BusinessID:  p.BusinessID,
+		ID:           id,
+		Photos:       p.Photos,
+		FeaturePhoto: p.FeaturePhoto,
+		Type:         p.Type,
+		Name:         p.Name,
+		Description:  p.Description,
+		Price:        p.Price,
+		Stock:        p.Stock,
+		BusinessID:   p.BusinessID,
 	}
 
 	return &product, r.db.Create(product).Error

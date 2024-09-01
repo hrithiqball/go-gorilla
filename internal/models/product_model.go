@@ -24,10 +24,14 @@ type ProductUpdate struct {
 }
 
 type ProductResponse struct {
-	ID          string `json:"id"`
-	Description string `json:"description"`
-	Name        string `json:"name"`
-	Price       uint   `json:"price"`
-	Stock       int    `json:"stock"`
-	BusinessID  string `json:"businessId"`
+	ID           string   `json:"id"`
+	Description  string   `json:"description"`
+	Name         string   `json:"name"`
+	Price        uint     `json:"price"`
+	Type         string   `json:"type"`
+	Stock        int      `json:"stock"`
+	Photos       []string `json:"photos"`
+	FeaturePhoto string   `json:"featurePhoto"`
+	BusinessID   string   `json:"businessId"`
+	Business     Business `json:"business"`
 }
