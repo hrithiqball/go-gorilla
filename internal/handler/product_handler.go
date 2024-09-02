@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )
 
@@ -53,7 +54,11 @@ func (h *productHandler) CreateProductHandler(w http.ResponseWriter, r *http.Req
 	priceStr := r.FormValue("price")
 	stockStr := r.FormValue("stock")
 
-	price := utils.ParseUint(priceStr)
+	price, err := decimal.NewFromString(priceStr)
+	if err != nil {
+		utils.ResponseWithError(w, http.StatusBadRequest, "Invalid price format")
+		return
+	}
 	stock := utils.ParseInt(stockStr)
 
 	featurePhotoFile, featurePhotoHeader, err := r.FormFile("featurePhoto")
@@ -253,11 +258,13 @@ func (h *productHandler) DeleteProductHandler(w http.ResponseWriter, r *http.Req
 }
 
 func toProductResponse(product *models.Product) models.ProductResponse {
+	priceFloat, _ := product.Price.Float64()
+
 	return models.ProductResponse{
 		ID:           product.ID,
 		Name:         product.Name,
 		Description:  product.Description,
-		Price:        product.Price,
+		Price:        priceFloat,
 		Stock:        product.Stock,
 		Type:         product.Type,
 		Photos:       product.Photos,

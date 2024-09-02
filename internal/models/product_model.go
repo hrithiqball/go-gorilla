@@ -1,19 +1,22 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"github.com/shopspring/decimal"
+	"gorm.io/gorm"
+)
 
 type Product struct {
 	gorm.Model
-	ID           string   `gorm:"primaryKey" json:"id"`
-	Name         string   `json:"name"`
-	Description  string   `json:"description"`
-	Price        uint     `json:"price"`
-	Stock        int      `json:"stock"`
-	Photos       []string `gorm:"type:text[]" json:"photos"`
-	FeaturePhoto string   `gorm:"type:text" json:"feature_photo"`
-	Type         string   `json:"type"`
-	BusinessID   string   `json:"businessId"`
-	Business     Business `gorm:"foreignKey:BusinessID" json:"business"`
+	ID           string          `gorm:"primaryKey" json:"id"`
+	Name         string          `json:"name"`
+	Description  string          `json:"description"`
+	Price        decimal.Decimal `gorm:"type:numeric" json:"price"`
+	Stock        int             `json:"stock"`
+	Photos       []string        `gorm:"type:text[]" json:"photos"`
+	FeaturePhoto string          `gorm:"type:text" json:"feature_photo"`
+	Type         string          `json:"type"`
+	BusinessID   string          `json:"businessId"`
+	Business     Business        `gorm:"foreignKey:BusinessID" json:"business"`
 }
 
 type ProductUpdate struct {
@@ -27,7 +30,7 @@ type ProductResponse struct {
 	ID           string   `json:"id"`
 	Description  string   `json:"description"`
 	Name         string   `json:"name"`
-	Price        uint     `json:"price"`
+	Price        float64  `json:"price"`
 	Type         string   `json:"type"`
 	Stock        int      `json:"stock"`
 	Photos       []string `json:"photos"`

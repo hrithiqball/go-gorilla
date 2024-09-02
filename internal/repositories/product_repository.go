@@ -39,7 +39,7 @@ func (r *productRepository) CreateProduct(p *models.Product) (*models.Product, e
 		BusinessID:   p.BusinessID,
 	}
 
-	return &product, r.db.Create(product).Error
+	return &product, r.db.Create(&product).Error
 }
 
 func (r *productRepository) GetProductList(pagination utils.Pagination) ([]models.Product, int64, error) {
