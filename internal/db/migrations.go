@@ -24,6 +24,21 @@ var migrationList = []*gormigrate.Migration{
 		Migrate:  migrations.Migrate_create_product_table,
 		Rollback: migrations.Rollback_create_product_table,
 	},
+	{
+		ID:       "20240902003146_update_product_table",
+		Migrate:  migrations.Migrate_update_product_table,
+		Rollback: migrations.Rollback_update_product_table,
+	},
+	{
+		ID:       "20240902005512_add_photo_type_product",
+		Migrate:  migrations.Migrate_add_photo_type_product,
+		Rollback: migrations.Rollback_add_photo_type_product,
+	},
+	{
+		ID:       "20240903005114_update_price_to_decimal",
+		Migrate:  migrations.Migrate_update_price_to_decimal,
+		Rollback: migrations.Rollback_update_price_to_decimal,
+	},
 }
 
 func Migrations() error {

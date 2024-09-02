@@ -12,7 +12,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/gorilla/mux"
 	"gorm.io/gorm"
@@ -30,20 +29,6 @@ type BusinessHandler interface {
 
 type businessHandler struct {
 	businessService services.BusinessService
-}
-
-type BusinessResponse struct {
-	ID              string    `json:"id"`
-	Name            string    `json:"name"`
-	Phone           string    `json:"phone"`
-	Email           string    `json:"email"`
-	Website         string    `json:"website"`
-	CoverPhoto      string    `json:"coverPhoto"`
-	ProfilePhoto    string    `json:"profilePhoto"`
-	CreatedAt       time.Time `json:"createdAt"`
-	UpdatedAt       time.Time `json:"updatedAt"`
-	Address         string    `json:"address"`
-	BusinessOwnerID string    `json:"businessOwnerId"`
 }
 
 func NewBusinessHandler(service services.BusinessService) BusinessHandler {
@@ -148,16 +133,16 @@ func (h *businessHandler) GetBusinessListHandler(w http.ResponseWriter, r *http.
 		return
 	}
 
-	businessListResponse := []BusinessResponse{}
+	businessListResponse := []models.BusinessResponse{}
 	for _, business := range businessList {
 		businessListResponse = append(businessListResponse, *toBusinessResponse(&business))
 	}
 
 	response := struct {
-		Businesses []BusinessResponse `json:"businessList"`
-		Total      int64              `json:"total"`
-		Page       int                `json:"page"`
-		PageSize   int                `json:"pageSize"`
+		Businesses []models.BusinessResponse `json:"businessList"`
+		Total      int64                     `json:"total"`
+		Page       int                       `json:"page"`
+		PageSize   int                       `json:"pageSize"`
 	}{
 		Businesses: businessListResponse,
 		Total:      businessListCount,
@@ -278,8 +263,14 @@ func saveFile(file multipart.File, fileHeader *multipart.FileHeader) (string, er
 	return "/bucket/" + hashedFileName, nil
 }
 
-func toBusinessResponse(business *models.Business) *BusinessResponse {
-	return &BusinessResponse{
+func toBusinessResponse(business *models.Business) *models.BusinessResponse {
+	var productsResponse []models.ProductResponse
+	for _, product := range business.Products {
+		productResponse := toProductResponse(&product)
+		productsResponse = append(productsResponse, productResponse)
+	}
+
+	return &models.BusinessResponse{
 		ID:              business.ID,
 		Name:            business.Name,
 		Phone:           business.Phone,
@@ -291,5 +282,6 @@ func toBusinessResponse(business *models.Business) *BusinessResponse {
 		UpdatedAt:       business.UpdatedAt,
 		Address:         business.Address,
 		BusinessOwnerID: business.BusinessOwnerID,
+		Products:        productsResponse,
 	}
 }

@@ -59,7 +59,7 @@ func (r *businessRepository) GetBusinessList(pagination utils.Pagination) ([]mod
 
 func (r *businessRepository) GetBusinessByID(id string) (*models.Business, error) {
 	var business models.Business
-	if err := r.db.Preload("BusinessOwner").First(&business, "id = ?", id).Error; err != nil {
+	if err := r.db.Preload("BusinessOwner").Preload("Products").First(&business, "id = ?", id).Error; err != nil {
 		return nil, err
 	}
 

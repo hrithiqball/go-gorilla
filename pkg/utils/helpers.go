@@ -61,3 +61,11 @@ func ParseInt(s string) int {
 	}
 	return i
 }
+
+func ParseUint(s string) uint {
+	u64, err := strconv.ParseUint(s, 10, 32)
+	if err != nil {
+		return 0.0
+	}
+	return uint(u64)
+}
