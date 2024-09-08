@@ -24,6 +24,7 @@ type ProductUpdate struct {
 	Description string `json:"description"`
 	Stock       int    `json:"stock"`
 	Price       int    `json:"price"`
+	Type        string `json:"type"`
 }
 
 type ProductResponse struct {

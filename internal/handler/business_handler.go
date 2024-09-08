@@ -155,8 +155,9 @@ func (h *businessHandler) GetBusinessListHandler(w http.ResponseWriter, r *http.
 
 func (h *businessHandler) GetBusinessHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
+	ID := vars["id"]
 
-	business, err := h.businessService.GetBusinessService(vars["id"])
+	business, err := h.businessService.GetBusinessService(ID)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			utils.ResponseWithError(w, http.StatusNotFound, "Business not found")

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"local_my_api/internal/models"
 	"local_my_api/pkg/utils"
+	"log"
 
 	"gorm.io/gorm"
 )
@@ -58,8 +59,9 @@ func (r *productRepository) GetProductList(pagination utils.Pagination) ([]model
 }
 
 func (r *productRepository) GetProductByID(id string) (*models.Product, error) {
-	product := models.Product{}
-	if err := r.db.Preload("Business").Where("id = ?", id).First(&product).Error; err != nil {
+	var product models.Product
+	log.Printf("id: %s", id)
+	if err := r.db.First(&product, "id = ?", id).Error; err != nil {
 		return nil, fmt.Errorf("failed to retrieve product: %w", err)
 	}
 
@@ -67,16 +69,16 @@ func (r *productRepository) GetProductByID(id string) (*models.Product, error) {
 }
 
 func (r *productRepository) UpdateProduct(id string, p *models.ProductUpdate) (*models.Product, error) {
-	product := models.Product{}
-	if err := r.db.Where("id = ?", id).First(&product).Error; err != nil {
+	product, err := r.GetProductByID(id)
+	if err != nil {
 		return nil, fmt.Errorf("failed to retrieve product: %w", err)
 	}
 
-	if err := r.db.Model(&product).Updates(p).Error; err != nil {
+	if err := r.db.Model(product).Updates(p).Error; err != nil {
 		return nil, fmt.Errorf("failed to update product: %w", err)
 	}
 
-	return &product, nil
+	return product, nil
 }
 
 func (r *productRepository) DeleteProduct(id string) error {

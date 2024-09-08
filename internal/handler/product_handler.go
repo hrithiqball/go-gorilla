@@ -167,9 +167,10 @@ func (h *productHandler) GetProductListHandler(w http.ResponseWriter, r *http.Re
 }
 
 func (h *productHandler) GetProductHandler(w http.ResponseWriter, r *http.Request) {
-	vars := r.URL.Query()
+	vars := mux.Vars(r)
+	ID := vars["id"]
 
-	product, err := h.productService.GetProductService(vars.Get("id"))
+	product, err := h.productService.GetProductService(ID)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			utils.ResponseWithError(w, http.StatusNotFound, "Product not found")
@@ -186,9 +187,21 @@ func (h *productHandler) GetProductHandler(w http.ResponseWriter, r *http.Reques
 
 func (h *productHandler) UpdateProductHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
+	ID := vars["id"]
 
-	productID := vars["id"]
+	userID, ok := r.Context().Value(utils.UserIDKey).(string)
+	if !ok {
+		utils.ResponseWithError(w, http.StatusUnauthorized, "Error getting user ID from context")
+		return
+	}
+
+	if userID == "" {
+		utils.ResponseWithError(w, http.StatusUnauthorized, "You are not authorized to perform this action")
+		return
+	}
+
 	name := r.FormValue("name")
+	productType := r.FormValue("type")
 	description := r.FormValue("description")
 	priceStr := r.FormValue("price")
 	stockStr := r.FormValue("stock")
@@ -196,11 +209,12 @@ func (h *productHandler) UpdateProductHandler(w http.ResponseWriter, r *http.Req
 	price := utils.ParseInt(priceStr)
 	stock := utils.ParseInt(stockStr)
 
-	product, err := h.productService.UpdateProductService(productID, &models.ProductUpdate{
+	product, err := h.productService.UpdateProductService(ID, &models.ProductUpdate{
 		Name:        name,
 		Description: description,
 		Price:       price,
 		Stock:       stock,
+		Type:        productType,
 	})
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {

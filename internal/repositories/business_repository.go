@@ -11,7 +11,7 @@ import (
 type BusinessRepository interface {
 	CreateBusiness(business *models.Business) (*models.Business, error)
 	GetBusinessList(pagination utils.Pagination) ([]models.Business, int64, error)
-	GetBusinessByID(id string) (*models.Business, error)
+	GetBusinessByID(ID string) (*models.Business, error)
 	UpdateBusiness(id string, business *models.BusinessUpdate) (*models.Business, error)
 	DeleteBusiness(id string) error
 }
@@ -57,9 +57,9 @@ func (r *businessRepository) GetBusinessList(pagination utils.Pagination) ([]mod
 	return businessList, totalBusiness, nil
 }
 
-func (r *businessRepository) GetBusinessByID(id string) (*models.Business, error) {
+func (r *businessRepository) GetBusinessByID(ID string) (*models.Business, error) {
 	var business models.Business
-	if err := r.db.Preload("BusinessOwner").Preload("Products").First(&business, "id = ?", id).Error; err != nil {
+	if err := r.db.Preload("BusinessOwner").Preload("Products").First(&business, "id = ?", ID).Error; err != nil {
 		return nil, err
 	}
 

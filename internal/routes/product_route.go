@@ -14,7 +14,7 @@ func SetupProductRoutes(r *mux.Router, h handler.ProductHandler) {
 
 	protected := r.PathPrefix("/product").Subrouter()
 	protected.HandleFunc("", h.CreateProductHandler).Methods("POST")
-	protected.HandleFunc("/{id}", h.UpdateProductHandler).Methods("PUT")
+	protected.HandleFunc("/{id}", h.UpdateProductHandler).Methods("PATCH")
 	protected.HandleFunc("/{id}", h.DeleteProductHandler).Methods("DELETE")
 	protected.Use(middlewares.AuthMiddleware)
 }

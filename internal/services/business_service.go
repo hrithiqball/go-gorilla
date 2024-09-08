@@ -9,7 +9,7 @@ import (
 type BusinessService interface {
 	CreateBusinessService(business *models.Business) (*models.Business, error)
 	GetBusinessListService(pagination utils.Pagination) ([]models.Business, int64, error)
-	GetBusinessService(id string) (*models.Business, error)
+	GetBusinessService(ID string) (*models.Business, error)
 	UpdateBusinessService(id string, business *models.BusinessUpdate) (*models.Business, error)
 	DeleteBusinessService(id string) error
 }
@@ -30,8 +30,8 @@ func (s *businessService) GetBusinessListService(pagination utils.Pagination) ([
 	return s.businessRepository.GetBusinessList(pagination)
 }
 
-func (s *businessService) GetBusinessService(id string) (*models.Business, error) {
-	return s.businessRepository.GetBusinessByID(id)
+func (s *businessService) GetBusinessService(ID string) (*models.Business, error) {
+	return s.businessRepository.GetBusinessByID(ID)
 }
 
 func (s *businessService) UpdateBusinessService(id string, b *models.BusinessUpdate) (*models.Business, error) {
