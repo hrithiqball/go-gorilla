@@ -136,11 +136,12 @@ func (h *productHandler) GetProductListHandler(w http.ResponseWriter, r *http.Re
 	pageStr := r.URL.Query().Get("page")
 	sizeStr := r.URL.Query().Get("size")
 	offsetStr := r.URL.Query().Get("offset")
+	businessID := r.URL.Query().Get("businessId")
 	log.Printf("page: %s, size: %s, offset: %s", pageStr, sizeStr, offsetStr)
 
 	pagination := utils.ParsePagination(pageStr, sizeStr)
 
-	productList, count, err := h.productService.GetProductListService(pagination)
+	productList, count, err := h.productService.GetProductListService(pagination, businessID)
 	if err != nil {
 		utils.ResponseWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -274,6 +275,27 @@ func (h *productHandler) DeleteProductHandler(w http.ResponseWriter, r *http.Req
 func toProductResponse(product *models.Product) models.ProductResponse {
 	priceFloat, _ := product.Price.Float64()
 
+	businessOwnerResponse := models.BusinessOwnerResponse{
+		ID:    product.Business.BusinessOwner.ID,
+		Name:  product.Business.BusinessOwner.Name,
+		Email: product.Business.BusinessOwner.Email,
+	}
+
+	businessResponse := models.BusinessResponse{
+		ID:              product.Business.ID,
+		Name:            product.Business.Name,
+		Phone:           product.Business.Phone,
+		Email:           product.Business.Email,
+		Website:         product.Business.Website,
+		CoverPhoto:      product.Business.CoverPhoto,
+		ProfilePhoto:    product.Business.ProfilePhoto,
+		CreatedAt:       product.Business.CreatedAt,
+		UpdatedAt:       product.Business.UpdatedAt,
+		Address:         product.Business.Address,
+		BusinessOwner:   businessOwnerResponse,
+		BusinessOwnerID: product.Business.BusinessOwnerID,
+	}
+
 	return models.ProductResponse{
 		ID:           product.ID,
 		Name:         product.Name,
@@ -284,5 +306,6 @@ func toProductResponse(product *models.Product) models.ProductResponse {
 		Photos:       product.Photos,
 		FeaturePhoto: product.FeaturePhoto,
 		BusinessID:   product.BusinessID,
+		Business:     businessResponse,
 	}
 }

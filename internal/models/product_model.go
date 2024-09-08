@@ -28,14 +28,14 @@ type ProductUpdate struct {
 }
 
 type ProductResponse struct {
-	ID           string   `json:"id"`
-	Description  string   `json:"description"`
-	Name         string   `json:"name"`
-	Price        float64  `json:"price"`
-	Type         string   `json:"type"`
-	Stock        int      `json:"stock"`
-	Photos       []string `json:"photos"`
-	FeaturePhoto string   `json:"featurePhoto"`
-	BusinessID   string   `json:"businessId"`
-	Business     Business `json:"business"`
+	ID           string           `json:"id"`
+	Description  string           `json:"description"`
+	Name         string           `json:"name"`
+	Price        float64          `json:"price"`
+	Type         string           `json:"type"`
+	Stock        int              `json:"stock"`
+	Photos       []string         `json:"photos"`
+	FeaturePhoto string           `json:"featurePhoto"`
+	BusinessID   string           `json:"businessId"`
+	Business     BusinessResponse `json:"business"`
 }

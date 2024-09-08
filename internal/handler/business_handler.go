@@ -189,12 +189,15 @@ func (h *businessHandler) UpdateBusinessHandler(w http.ResponseWriter, r *http.R
 	}
 
 	name := r.FormValue("name")
-	// add other fields
-
-	// validate form data
+	address := r.FormValue("address")
+	phone := r.FormValue("phone")
+	website := r.FormValue("website")
 
 	business, err := h.businessService.UpdateBusinessService(paramsID, &models.BusinessUpdate{
-		Name: &name,
+		Name:    &name,
+		Address: &address,
+		Phone:   &phone,
+		Website: &website,
 	})
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {

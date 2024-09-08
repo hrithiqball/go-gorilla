@@ -8,7 +8,7 @@ import (
 
 type ProductService interface {
 	CreateProductService(product *models.Product) (*models.Product, error)
-	GetProductListService(pagination utils.Pagination) ([]models.Product, int64, error)
+	GetProductListService(pagination utils.Pagination, businessID string) ([]models.Product, int64, error)
 	GetProductService(id string) (*models.Product, error)
 	UpdateProductService(id string, product *models.ProductUpdate) (*models.Product, error)
 	DeleteProductService(id string) error
@@ -26,8 +26,8 @@ func (s *productService) CreateProductService(p *models.Product) (*models.Produc
 	return s.productRepository.CreateProduct(p)
 }
 
-func (s *productService) GetProductListService(pagination utils.Pagination) ([]models.Product, int64, error) {
-	return s.productRepository.GetProductList(pagination)
+func (s *productService) GetProductListService(pagination utils.Pagination, businessID string) ([]models.Product, int64, error) {
+	return s.productRepository.GetProductList(pagination, businessID)
 }
 
 func (s *productService) GetProductService(id string) (*models.Product, error) {

@@ -6,6 +6,10 @@ import (
 	"gorm.io/gorm"
 )
 
+const (
+	PreloadBusinessOwner = "Business.BusinessOwner"
+)
+
 type Business struct {
 	gorm.Model
 	ID              string    `gorm:"primaryKey" json:"id"`
@@ -33,16 +37,23 @@ type BusinessUpdate struct {
 }
 
 type BusinessResponse struct {
-	ID              string            `json:"id"`
-	Name            string            `json:"name"`
-	Phone           string            `json:"phone"`
-	Email           string            `json:"email"`
-	Website         string            `json:"website"`
-	CoverPhoto      string            `json:"coverPhoto"`
-	ProfilePhoto    string            `json:"profilePhoto"`
-	CreatedAt       time.Time         `json:"createdAt"`
-	UpdatedAt       time.Time         `json:"updatedAt"`
-	Address         string            `json:"address"`
-	BusinessOwnerID string            `json:"businessOwnerId"`
-	Products        []ProductResponse `json:"products"`
+	ID              string                `json:"id"`
+	Name            string                `json:"name"`
+	Phone           string                `json:"phone"`
+	Email           string                `json:"email"`
+	Website         string                `json:"website"`
+	CoverPhoto      string                `json:"coverPhoto"`
+	ProfilePhoto    string                `json:"profilePhoto"`
+	CreatedAt       time.Time             `json:"createdAt"`
+	UpdatedAt       time.Time             `json:"updatedAt"`
+	Address         string                `json:"address"`
+	BusinessOwnerID string                `json:"businessOwnerId"`
+	BusinessOwner   BusinessOwnerResponse `json:"businessOwner"`
+	Products        []ProductResponse     `json:"products"`
+}
+
+type BusinessOwnerResponse struct {
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
 }

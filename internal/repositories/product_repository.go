@@ -11,7 +11,7 @@ import (
 
 type ProductRepository interface {
 	CreateProduct(product *models.Product) (*models.Product, error)
-	GetProductList(pagination utils.Pagination) ([]models.Product, int64, error)
+	GetProductList(pagination utils.Pagination, businessID string) ([]models.Product, int64, error)
 	GetProductByID(id string) (*models.Product, error)
 	UpdateProduct(id string, product *models.ProductUpdate) (*models.Product, error)
 	DeleteProduct(id string) error
@@ -43,16 +43,27 @@ func (r *productRepository) CreateProduct(p *models.Product) (*models.Product, e
 	return &product, r.db.Create(&product).Error
 }
 
-func (r *productRepository) GetProductList(pagination utils.Pagination) ([]models.Product, int64, error) {
+func (r *productRepository) GetProductList(pagination utils.Pagination, businessID string) ([]models.Product, int64, error) {
 	productList := []models.Product{}
 	totalProduct := int64(0)
 
-	if err := r.db.Offset(pagination.Offset).Limit(pagination.Size).Find(&productList).Error; err != nil {
+	query := r.db.Offset(pagination.Offset).Limit(pagination.Size)
+
+	if businessID != "" {
+		query = query.Where(&models.Product{BusinessID: businessID})
+	}
+
+	if err := query.Preload(models.PreloadBusinessOwner).Find(&productList).Error; err != nil {
 		return nil, totalProduct, fmt.Errorf("failed to retrieve product list: %w", err)
 	}
 
-	if err := r.db.Model(&models.Product{}).Count(&totalProduct).Error; err != nil {
-		return nil, totalProduct, fmt.Errorf("failed to retrieve product list: %w", err)
+	countQuery := r.db.Model(&models.Product{})
+	if businessID != "" {
+		countQuery = countQuery.Where(&models.Product{BusinessID: businessID})
+	}
+
+	if err := countQuery.Count(&totalProduct).Error; err != nil {
+		return nil, totalProduct, fmt.Errorf("failed to count products: %w", err)
 	}
 
 	return productList, totalProduct, nil
@@ -61,7 +72,7 @@ func (r *productRepository) GetProductList(pagination utils.Pagination) ([]model
 func (r *productRepository) GetProductByID(id string) (*models.Product, error) {
 	var product models.Product
 	log.Printf("id: %s", id)
-	if err := r.db.First(&product, "id = ?", id).Error; err != nil {
+	if err := r.db.Preload("Business").First(&product, "id = ?", id).Error; err != nil {
 		return nil, fmt.Errorf("failed to retrieve product: %w", err)
 	}
 

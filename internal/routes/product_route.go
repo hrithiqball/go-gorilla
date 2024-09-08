@@ -9,7 +9,7 @@ import (
 
 func SetupProductRoutes(r *mux.Router, h handler.ProductHandler) {
 	public := r.PathPrefix("/product").Subrouter()
-	public.HandleFunc("", h.GetProductHandler).Methods("GET")
+	public.HandleFunc("/list", h.GetProductListHandler).Methods("GET")
 	public.HandleFunc("/{id}", h.GetProductHandler).Methods("GET")
 
 	protected := r.PathPrefix("/product").Subrouter()
